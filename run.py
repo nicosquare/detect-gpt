@@ -777,15 +777,16 @@ if __name__ == '__main__':
     parser.add_argument('--pre_perturb_span_length', type=int, default=5)
     parser.add_argument('--random_fills', action='store_true')
     parser.add_argument('--random_fills_tokens', action='store_true')
-    parser.add_argument('--cache_dir', type=str, default="~/.cache")
+    parser.add_argument('--cache_dir', type=str, default="./.cache")
     args = parser.parse_args()
 
     API_TOKEN_COUNTER = 0
 
     if args.openai_model is not None:
         import openai
-        assert args.openai_key is not None, "Must provide OpenAI API key as --openai_key"
-        openai.api_key = args.openai_key
+
+        if args.openai_key is None:
+            openai.api_key = args.openai_key
 
     START_DATE = datetime.datetime.now().strftime('%Y-%m-%d')
     START_TIME = datetime.datetime.now().strftime('%H-%M-%S-%f')
