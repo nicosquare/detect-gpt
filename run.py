@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import datasets
 import transformers
+import datasets
 import re
 import torch
 import torch.nn.functional as F
@@ -16,6 +16,12 @@ import functools
 import custom_datasets
 from multiprocessing.pool import ThreadPool
 import time
+import os
+from typing import Tuple
+from dotenv import load_dotenv
+
+# load environment variables from .env file
+load_dotenv()
 
 
 
@@ -663,7 +669,7 @@ def generate_data(dataset, key):
     return generate_samples(data[:n_samples], batch_size=batch_size)
 
 
-def load_base_model_and_tokenizer(name):
+def load_base_model_and_tokenizer(name) -> Tuple[transformers.PreTrainedModel, transformers.PreTrainedTokenizer]:
     if args.openai_model is None:
         print(f'Loading BASE model {args.base_model_name}...')
         base_model_kwargs = {}
@@ -783,10 +789,13 @@ if __name__ == '__main__':
     API_TOKEN_COUNTER = 0
 
     if args.openai_model is not None:
+
         import openai
 
-        if args.openai_key is None:
-            openai.api_key = args.openai_key
+        openai_api_key = os.environ.get("OPENAI_API_KEY")
+
+        assert args.openai_key is not None or openai_api_key is not None, "Must provide OpenAI API key as --openai_key or using the environment variable OPENAI_API_KEY"
+        openai.api_key = args.openai_key if args.openai_key is not None else openai_api_key
 
     START_DATE = datetime.datetime.now().strftime('%Y-%m-%d')
     START_TIME = datetime.datetime.now().strftime('%H-%M-%S-%f')
